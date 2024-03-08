@@ -82,9 +82,3 @@ Before running the application, ensure you have the following installed:
 Contributions are welcome! If you have any ideas for improvements, bug fixes, or new features, please feel free to submit a pull request or open an issue. Your contributions help improve the project for everyone.
 
 
-## Acknowledgments
-
-- This project uses the DFINITY SDK and Internet Computer platform for canister interactions.
-- Special thanks to the developers of the canisters used in this project.
-
----
