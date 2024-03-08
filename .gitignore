@@ -1,0 +1,27 @@
+# Node.js dependencies
+node_modules/
+
+# Compiled TypeScript files
+*.js
+
+# IDE/editor specific files
+.vscode/
+.idea/
+*.code-workspace
+
+# Environment variables file (if any)
+.env
+
+# Ignore any compiled code or artifacts
+/dist/
+
+# Ignore logs and other output generated during runtime
+/logs/
+*.log
+
+# Ignore user-specific settings files
+*.iml
+.DS_Store
+
+# Ignore any sensitive files (such as passwords or keys)
+*.pem
