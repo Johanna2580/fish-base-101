@@ -1,0 +1,42 @@
+{
+  "canisters": {
+    "fishBase": {
+      "build": "npm run build-fishBase",
+      "candid": "src/fishBase.did",
+      "candid_gen": "custom",
+      "gzip": true,
+      "main": "src/fishBase.js",
+      "type": "custom",
+      "wasm": "build/fishBase.wasm",
+      "metadata": [
+        {
+          "name": "candid:service",
+          "path": "src/fishBase.did"
+        }
+      ]
+    },
+    "payment": {
+      "build": "npm run build-payment",
+      "candid": "src/payment.did",
+      "candid_gen": "custom",
+      "gzip": true,
+      "main": "src/payment.js",
+      "type": "custom",
+      "wasm": "build/payment.wasm",
+      "metadata": [
+        {
+          "name": "candid:service",
+          "path": "src/payment.did"
+        }
+      ]
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
