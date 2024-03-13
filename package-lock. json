@@ -1,0 +1,137 @@
+// index.ts
+
+import { Actor, HttpAgent } from '@dfinity/agent';
+import { idlFactory as fishBase_idl, canisterId as fishBase_id } from './fishBase.did.js';
+import { idlFactory as payment_idl, canisterId as payment_id } from './payment.did.js';
+
+// Define a type for a fish
+interface Fish {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+// Define a type for a user
+interface User {
+  username: string;
+  password: string;
+}
+
+// Create an HttpAgent to communicate with the Internet Computer
+const agent = new HttpAgent();
+
+// Create an actor instance to interact with the fish base canister
+const fishBase = Actor.createActor(fishBase_idl, { agent, canisterId: fishBase_id });
+
+// Create an actor instance to interact with the payment canister
+const payment = Actor.createActor(payment_idl, { agent, canisterId: payment_id });
+
+// Function to authenticate a user
+async function authenticateUser(username: string, password: string): Promise<User | null> {
+  // Implement your authentication logic here (e.g., check against a database)
+  // For simplicity, let's assume there's only one hardcoded user
+  const user: User = { username: 'admin', password: 'password' };
+  return (username === user.username && password === user.password) ? user : null;
+}
+
+// Function to process payment
+async function processPayment(amount: number): Promise<void> {
+  try {
+    // Call the makePayment function on the payment canister
+    await payment.makePayment(amount);
+    console.log(`Processed payment of ${amount} ICP`);
+  } catch (error) {
+    console.error('Error processing payment:', error);
+    throw error;
+  }
+}
+
+// Function to add a fish to the base
+async function addFish(fish: Fish): Promise<void> {
+  try {
+    // Call the addFish function on the fish base canister
+    await fishBase.addFish(fish);
+    console.log(`Added fish: ${fish.name}`);
+  } catch (error) {
+    console.error('Error adding fish:', error);
+    throw error;
+  }
+}
+
+// Function to remove a fish from the base
+async function removeFish(index: number): Promise<void> {
+  try {
+    // Call the removeFish function on the fish base canister
+    await fishBase.removeFish(index);
+    console.log(`Removed fish at index ${index}`);
+  } catch (error) {
+    console.error('Error removing fish:', error);
+    throw error;
+  }
+}
+
+// Function to list available fishes in the base
+async function listAvailableFishes(): Promise<void> {
+  try {
+    // Call the listAvailableFishes function on the fish base canister
+    const availableFishes: Fish[] = await fishBase.listAvailableFishes();
+    console.log('Available Fishes:');
+    availableFishes.forEach((fish, index) => {
+      console.log(`${index + 1}. Name: ${fish.name}, Quantity: ${fish.quantity}, Price: ${fish.price}`);
+    });
+  } catch (error) {
+    console.error('Error listing available fishes:', error);
+    throw error;
+  }
+}
+
+// Function to buy fish from the base
+async function buyFish(username: string, password: string, index: number, quantity: number): Promise<void> {
+  try {
+    // Authenticate the user
+    const user = await authenticateUser(username, password);
+    if (!user) {
+      throw new Error('Authentication failed');
+    }
+
+    // Retrieve fish details
+    const fish = await fishBase.getFish(index);
+    const totalPrice = fish.price * quantity;
+
+    // Process payment
+    await processPayment(totalPrice);
+
+    // Call the buyFish function on the fish base canister
+    await fishBase.buyFish(index, quantity);
+
+    console.log(`Bought ${quantity} ${fish.name}(s)`);
+  } catch (error) {
+    console.error('Error buying fish:', error);
+    throw error;
+  }
+}
+
+// Function to sell fish to the base
+async function sellFish(fish: Fish): Promise<void> {
+  try {
+    // Call the sellFish function on the fish base canister
+    await fishBase.sellFish(fish);
+    console.log(`Sold fish: ${fish.name}`);
+  } catch (error) {
+    console.error('Error selling fish:', error);
+    throw error;
+  }
+}
+
+// Example usage:
+
+(async () => {
+  await addFish({ name: 'Salmon', quantity: 10, price: 5 });
+  await addFish({ name: 'Trout', quantity: 15, price: 7 });
+  await listAvailableFishes();
+  await buyFish('admin', 'password', 1, 5);
+  await listAvailableFishes();
+  await sellFish({ name: 'Tuna', quantity: 8, price: 10 });
+})().catch((error) => {
+  console.error('Error:', error);
+});
